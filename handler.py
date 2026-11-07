@@ -115,7 +115,8 @@ def _vllm_argv() -> list[str]:
         "--served-model-name", SERVED_MODEL_NAME,
         "--max-model-len", MAX_MODEL_LEN,
         "--gpu-memory-utilization", GPU_MEMORY_UTILIZATION,
-        "--disable-log-requests",
+        # (Request logging is off by default in current vLLM; the old
+        # --disable-log-requests flag was removed and now aborts startup.)
     ]
     return argv + shlex.split(VLLM_EXTRA_ARGS)
 
