@@ -32,7 +32,7 @@ Open WebUI (:3000, noblesseoblige) ──► runpod-proxy (docker, ai_default ne
 ## Deploy (fastest path: RunPod GitHub integration)
 
 1. **Connect GitHub**: RunPod console → **Settings → Connections → GitHub → Connect**. Give it access to this repo.
-2. **Create the endpoint**: **Serverless → New Endpoint → Import Git Repository**. Pick `runpod-homelab-serverless`, branch `main`, Dockerfile path `Dockerfile` (repo root). RunPod builds the image, and the **Builds** tab shows progress. The first build takes a few minutes because it pulls the ~10 GB vLLM base image. Later builds reuse it. Pushing new commits starts a rebuild according to the endpoint's build settings.
+2. **Create the endpoint**: **Serverless → New Endpoint → Import Git Repository**. Pick `runpod-homelab-serverless`, branch `main`, Dockerfile path `Dockerfile` (repo root). RunPod builds the image, and the **Builds** tab shows progress. The first build takes a few minutes because it pulls the ~10 GB vLLM base image. Later builds reuse it. **Updates deploy when you publish a GitHub release, not on a plain push.** Run `gh release create v0.1.1 --generate-notes` after you merge changes. The Builds tab can also roll back to an earlier build. Managed-build limits: the Docker build step can take up to 30 min and the image can be up to 80 GB. This image is about 11 GB, so it fits.
 3. **GPU and scaling**:
 
    | Model (`MODEL_NAME`) | GPU class | `MAX_MODEL_LEN` |
@@ -167,7 +167,7 @@ Then go to **Serverless → New Endpoint → Docker Image** and enter that tag. 
 ## Swapping models / engines
 
 - **Another model**: change `MODEL_NAME` and `SERVED_MODEL_NAME` on the endpoint, then update `MODELS` in `runpod-proxy.env`. No rebuild is needed.
-- **Newer vLLM**: bump `ARG VLLM_VERSION` in the `Dockerfile` and push. The build fails if pip replaced the base image's vLLM.
+- **Newer vLLM**: bump `ARG VLLM_VERSION` in the `Dockerfile`, push, then publish a GitHub release to trigger the endpoint build. The build fails if pip replaced the base image's vLLM.
 - **Official worker**: `runpod-workers/worker-vllm` uses the same input contract, including `openai_route` and `openai_input`. Swapping to it doesn't change the proxy or Open WebUI.
 
 ## Security notes
