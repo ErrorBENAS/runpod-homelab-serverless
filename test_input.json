@@ -1,0 +1,10 @@
+{
+  "input": {
+    "messages": [
+      {"role": "system", "content": "You are a concise homelab assistant."},
+      {"role": "user", "content": "In one sentence: why does a serverless GPU endpoint suit a homelab with only an iGPU?"}
+    ],
+    "max_tokens": 128,
+    "temperature": 0.7
+  }
+}

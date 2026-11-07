@@ -1,0 +1,27 @@
+# Deploy on noblesseoblige:
+#   copy this folder to /opt/apps/runpod-proxy (owned by admin575, no sudo needed)
+#   cp .env.example runpod-proxy.env && chmod 600 runpod-proxy.env   # fill in keys
+#   docker compose up -d --build
+#
+# Open WebUI reaches it on the shared docker network as http://runpod-proxy:8080/v1.
+# Other tailnet clients: set BIND_ADDR to the server's Tailscale IP in .env
+# (default is localhost only -- nothing is exposed to the LAN or internet).
+services:
+  runpod-proxy:
+    build: .
+    image: runpod-proxy:local
+    container_name: runpod-proxy
+    env_file: [./runpod-proxy.env]
+    environment:
+      - TZ=America/Los_Angeles
+    ports: ["${BIND_ADDR:-127.0.0.1}:${PROXY_PORT:-7598}:8080"]
+    networks: [ai]
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+networks:
+  ai:
+    external: true
+    name: ai_default   # network of the Open WebUI / Ollama compose project (-p ai)
